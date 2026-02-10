@@ -2,7 +2,6 @@ window.isSuccess = false; // 是否成功
 
 // 选座范围配置：
 // 只在前几排 / 后几排中选择可用座位
-const TARGET_ROW_COUNT = 4;      // 要扫描的排数，比如 4 表示只在 4 排内找
 const TARGET_FROM = 'front';     // 'front' = 靠舞台最近的几排，'back' = 最远的几排
 
 async function sleep(t) {
@@ -71,6 +70,11 @@ async function findSeat() {
     if (rowYs.length === 0) {
         return false;
     }
+
+    // 获取配置的排数，如果没有配置则使用默认值 4
+    let concertId = getConcertId();
+    let data = await get_stored_value(concertId);
+    const TARGET_ROW_COUNT = data && data["target-row-count"] ? parseInt(data["target-row-count"]) : 4;
 
     // 2. 选出目标几排（前 TARGET_ROW_COUNT 排 / 后 TARGET_ROW_COUNT 排）
     let targetRows;
