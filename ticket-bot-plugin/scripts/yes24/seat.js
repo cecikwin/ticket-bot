@@ -22,24 +22,23 @@ function sendFeiShuMsg(msg) {
         console.log("WEBHOOK_URL未设置");
         return;
     }
-    const payload = {
-    msg_type: 'text',
-    content: {
-        text: msg
-    }
-    };
 
-    fetch(WEBHOOK_URL, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(json => console.log('结果:', json))
-    .catch(err => console.error('错误:', err));
-
+    // Use background script to bypass CORS restrictions
+    chrome.runtime.sendMessage({
+        action: 'sendFeishuWebhook',
+        data: {
+            webhookUrl: WEBHOOK_URL,
+            msg: msg
+        }
+    }, (response) => {
+        if (chrome.runtime.lastError) {
+            console.error('发送消息错误:', chrome.runtime.lastError);
+        } else if (response && response.success) {
+            console.log('结果:', response.data);
+        } else if (response && !response.success) {
+            console.error('错误:', response.error);
+        }
+    });
 }
 
 async function selectDate(data) {

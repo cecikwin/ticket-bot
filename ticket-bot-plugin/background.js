@@ -48,5 +48,38 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }
         });
         return true; // Indicates that the response is sent asynchronously
+    } else if (request.action === 'sendFeishuWebhook') {
+        const { webhookUrl, msg } = request.data;
+        
+        if (!webhookUrl) {
+            sendResponse({ success: false, error: 'WEBHOOK_URL未设置' });
+            return;
+        }
+
+        const payload = {
+            msg_type: 'text',
+            content: {
+                text: msg
+            }
+        };
+
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(json => {
+            console.log('Feishu webhook结果:', json);
+            sendResponse({ success: true, data: json });
+        })
+        .catch(err => {
+            console.error('Feishu webhook错误:', err);
+            sendResponse({ success: false, error: err.message });
+        });
+
+        return true; // Indicates that the response is sent asynchronously
     }
 });

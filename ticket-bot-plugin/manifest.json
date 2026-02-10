@@ -20,7 +20,8 @@
     "host_permissions": [
         "https://booking.thaiticketmajor.com/*",
         "https://ticket.yes24.com/*",
-        "https://cdn-botmanager.stclab.com/*"
+        "https://cdn-botmanager.stclab.com/*",
+        "https://www.feishu.cn/*"
     ],
     "background": {
         "service_worker": "background.js"
