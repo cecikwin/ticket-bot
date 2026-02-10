@@ -102,7 +102,23 @@ async function findSeat() {
             const clickEvent = new Event('click', { bubbles: true });
 
             rect.dispatchEvent(clickEvent);
-            frame.document.getElementById("nextTicketSelection").click();
+
+            // 防止 nextTicketSelection 不存在或点击失败导致脚本直接报错、停止抢票
+            try {
+                const nextBtn = frame.document.getElementById("nextTicketSelection");
+                if (!nextBtn) {
+                    console.warn("nextTicketSelection 按钮不存在，继续寻找其他座位");
+                    // 视为当前座位不可用，继续循环找下一个座位
+                    continue;
+                }
+                nextBtn.click();
+            } catch (e) {
+                console.error("点击 nextTicketSelection 失败，继续寻找其他座位", e);
+                // 视为当前座位不可用，继续循环找下一个座位
+                continue;
+            }
+
+            // 成功点击下一步按钮，认为本次选座成功，后续由 checkCaptchaFinish 处理
             return true;
         }
     }
